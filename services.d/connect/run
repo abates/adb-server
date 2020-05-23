@@ -1,0 +1,29 @@
+#!/bin/sh
+
+function waitPort() {
+  for i in 1 .. 30 ; do
+    if netstat -ln | grep -q ":$ADB_SERVER_PORT\s" ; then
+      return 0
+    fi
+    echo "ADB not yet ready on port $1"
+    sleep 1
+  done
+  return 1
+}
+
+while true ; do
+  if waitPort $ADB_SERVER_PORT ; then
+      for device in $ADB_DEVICES ; do
+        msg=`adb connect $device 2>&1`
+        if [ $? -ne 0 ] ; then
+          echo "ADB failed to connect to $device"
+          echo $msg
+        fi
+      done
+      sleep 60
+  else
+    echo "Timed out waiting for ADB server on port $ADB_SERVER_PORT"
+    exit 1
+  fi
+done
+exit 0

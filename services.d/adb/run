@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -f /data/adbkey ] ; then
+  echo "Generating ADB key"
+  adb keygen /data/adbkey
+fi
+
+while true ; do
+  echo "Starting ADB server"
+  SECONDS=0
+  adb -P $ADB_SERVER_PORT -a server nodaemon
+  if [ $SECONDS -lt 5 ] ; then
+    echo "ADB server exited after $SECONDS seconds.  Not restarting"
+    exit 1
+  fi
+  echo "ADB server exited, restarting"
+done
