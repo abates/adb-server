@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv sh
+
+for device in $ADB_DEVICES ; do
+  msg=`adb disconnect $device 2>&1`
+  if [ $? -ne 0 ] ; then
+    echo "ADB failed to disconnect $device"
+    echo $msg
+  fi
+done
